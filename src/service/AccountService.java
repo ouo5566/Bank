@@ -1,13 +1,18 @@
 package service;
-import domain.Account;
+import domain.*;
 
 public interface AccountService {
-	public Account createAccount(String name, String uid, String password);
-	public Account createMinusAccount(String name, String uid, String password);
-	public void addList(Account account);
-	public Account[] list();
+	public void createAccount(AccountBean accountBean);
+	public void createMinusAccount(AccountBean accountBean,String limit);
+	public void addList(AccountBean accountBean);
+	public AccountBean[] list();
 	public String createAccountNum(String random);
 	public String createRandom(int start, int end);
 	public String createDate();
-	public String showResult();
+	public String showResult(AccountBean[] beanArr);
+	public AccountBean findById(AccountBean accountBean);
+	public int countSameWord(String word);
+	public AccountBean[] findByName(String name);
+	public int countMinusList();
+	public AccountBean[] findMinusList();
 }
