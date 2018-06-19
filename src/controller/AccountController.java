@@ -1,15 +1,15 @@
 package controller;
+
 import javax.swing.JOptionPane;
 import domain.*;
 import service.*;
 import serviceImpl.*;
-
-enum Butt {EXIT,BASIC_ACCOUNT,MINUS_ACCOUNT,LIST,MINUS_LIST,FIND_BY_ID,FIND_BY_NAME};
+enum Butt {EXIT,BASIC_ACCOUNT,MINUS_ACCOUNT,LIST,MINUS_LIST,FIND_BY_ID,FIND_BY_NAME,CHANGE_PASSWORD,DELETE_ACCOUNT};
 public class AccountController {
 	public static void main(String[] args) {
 		AccountService service = new AccountServiceImpl();
 		AccountBean account = null;
-		Butt[] button = {Butt.EXIT, Butt.BASIC_ACCOUNT, Butt.MINUS_ACCOUNT, Butt.LIST, Butt.MINUS_LIST, Butt.FIND_BY_ID, Butt.FIND_BY_NAME};
+		Butt[] button = {Butt.EXIT, Butt.BASIC_ACCOUNT, Butt.MINUS_ACCOUNT, Butt.LIST, Butt.MINUS_LIST, Butt.FIND_BY_ID, Butt.FIND_BY_NAME, Butt.CHANGE_PASSWORD, Butt.DELETE_ACCOUNT};
 		while(true) {
 			switch((Butt)JOptionPane.showInputDialog(null,"무엇을 도와드릴까요?","BIT_BANK",JOptionPane.QUESTION_MESSAGE,null,button,null)) {
 			case EXIT : return;
@@ -42,6 +42,20 @@ public class AccountController {
 				break;
 			case FIND_BY_NAME :
 				JOptionPane.showMessageDialog(null,service.showResult(service.findByName(JOptionPane.showInputDialog("이름"))));
+				break;
+			case CHANGE_PASSWORD :
+				account = new AccountBean();
+				account.setUid(JOptionPane.showInputDialog("아이디"));
+				account.setPassWord(JOptionPane.showInputDialog("비밀번호")+"/"+JOptionPane.showInputDialog("새비밀번호"));
+				String msg = service.changePassWord(account);
+				JOptionPane.showMessageDialog(null,msg);
+				break;
+			case DELETE_ACCOUNT :
+				account = new AccountBean();
+				account.setUid(JOptionPane.showInputDialog("아이디"));
+				account.setPassWord(JOptionPane.showInputDialog("비밀번호")+"/"+JOptionPane.showInputDialog("비밀번호 확인"));
+				// 계좌 삭제 후 총 계좌 수가 1 감소.
+				JOptionPane.showMessageDialog(null, service.deleteAccount(account));
 				break;
 			}
 		}

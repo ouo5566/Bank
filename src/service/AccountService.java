@@ -15,4 +15,6 @@ public interface AccountService {
 	public AccountBean[] findByName(String name);
 	public int countMinusList();
 	public AccountBean[] findMinusList();
+	public String changePassWord(AccountBean accountBean);
+	public String deleteAccount(AccountBean accountBean);
 }

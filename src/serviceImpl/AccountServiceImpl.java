@@ -129,4 +129,41 @@ public class AccountServiceImpl implements AccountService {
 		return minusList;
 	}
 
+	@Override
+	public String changePassWord(AccountBean accountBean) {
+		// 성공 : 변경완료 , 실패 : 변경실패 (pass == newPass > 실패)
+ 		String msg = "";
+ 		String[] passUnit = String.valueOf(accountBean.getPassWord()).split("/");
+ 		accountBean.setPassWord(passUnit[0]);
+ 		accountBean = findById(accountBean);
+ 		if(accountBean.getUid()==null) {
+ 			msg = "계정없음";
+ 		}else { 
+ 			msg = (passUnit[1].equals(passUnit[0])) ? "변경실패" : "변경완료" ;
+ 			accountBean.setPassWord(passUnit[1]);
+ 		}
+		return msg;
+	}
+
+	@Override
+	public String deleteAccount(AccountBean accountBean) {
+		String msg = "ERROR_비밀번호불일치";
+ 		String[] passUnit = String.valueOf(accountBean.getPassWord()).split("/");
+ 		accountBean.setPassWord(passUnit[0]);
+ 		accountBean = findById(accountBean);
+ 		if(accountBean.getUid() == null) {
+ 			msg = "ERROR_계좌없음";
+ 			return msg;
+ 		}else if(passUnit[1].equals(passUnit[0])) {
+ 			for (int i = 0; i < count; i++) {
+ 				if (accountBean.getUid().equals(list[i].getUid()) && passUnit[0].equals(list[i].getPassWord())) {
+ 					list[i] = list[--count];
+ 					msg = "계좌삭제완료";
+ 					break;
+ 				}
+ 			}
+ 		}
+		return msg;
+	}
+
 }
