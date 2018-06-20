@@ -1,129 +1,66 @@
 package serviceImpl;
-
+import java.util.List;
 import domain.*;
 import service.MemberService;
+import java.util.ArrayList;
 
-public class MemberServiceImpl implements MemberService {
-	MemberBean[] list;
-	int count;
-
+public class MemberServiceImpl implements MemberService{
+	List<MemberBean> list;
 	public MemberServiceImpl() {
-		list = new MemberBean[10];
-		count = 0;
+		list = new ArrayList<MemberBean>();
+	}
+	@Override
+	public void createUser(UserBean user) {
+		user.setCreditRating("7등급");
+//		boolean flag = list.add(user);
+//		String result = (flag)?"등록성공":"등록실패";
+//		System.out.println("실행결과 : " + result);
+		System.out.println("실행결과 : " + ((list.add(user))?"등록성공":"등록실패"));
 	}
 
 	@Override
-	public void creatUser(MemberBean memberBean) {
-		((UserBean) memberBean).setCreditRating("7");
-		addList(memberBean);
+	public void createStaff(StaffBean staff) {
+		staff.setAccessNum("1234");
+		System.out.println("실행결과 : " + ((list.add(staff))?"등록성공":"등록실패"));
 	}
 
 	@Override
-	public void creatSteff(MemberBean memberBean) {
-		((SteffBean) memberBean).setAccessNum("123456");
-		addList(memberBean);
-	}
-
-	@Override
-	public void addList(MemberBean memberBean) {
-		list[count++] = memberBean;
-	}
-
-	@Override
-	public MemberBean[] list() {
+	public List<MemberBean> list() {
 		return list;
 	}
 
 	@Override
-	public String showResult(MemberBean[] memberBean) {
-		String result = "";
-		int count = (this.count < memberBean.length) ? this.count : memberBean.length;
-		for (int i = 0; i < count; i++) {
-			result += memberBean[i];
+	public List<MemberBean> search(String param) {
+		List<MemberBean> arr = new ArrayList<>();
+		for( int i = 0 ; i < list.size() ; i++ ) {
+			if(param.equals(list.get(i).getName())){
+				arr.add(list.get(i));
+			}
 		}
-		return result;
+		return arr;
 	}
 
 	@Override
-	public MemberBean findById(MemberBean memberBean) {
-		MemberBean searchResult = new MemberBean();
-		for (int i = 0; i < count; i++) {
-			if (memberBean.getUid().equals(list[i].getUid())
-					&& memberBean.getPassword().equals(list[i].getPassword())) {
-				searchResult = list[i];
+	public MemberBean search(MemberBean member) {
+		MemberBean temp = new MemberBean();
+		for( int i = 0 ; i < list.size() ; i++ ) {
+			if(member.getUid().equals(list.get(i).getUid())){
+				temp = list.get(i);
 				break;
 			}
 		}
-		return searchResult;
+		return temp;
 	}
 
 	@Override
-	public int countSameWord(String word) {
-		int countSame = 0;
-		for (int i = 0; i < count; i++) {
-			if (word.equals(list[i].getName())) {
-				countSame++;
-			}
-		}
-		return countSame;
+	public void update(MemberBean member) {
+		search(member).setPassword(member.getPassword());
 	}
 
 	@Override
-	public MemberBean[] findByWord(String word) {
-		int samecount = countSameWord(word);
-		MemberBean[] searchResult = new MemberBean[samecount];
-		for (int i = 0, j = 0; i < count; i++) {
-			if (word.equals(list[i].getName())) {
-				searchResult[j++] = list[i];
-			}
-		}
-		return searchResult;
+	public void delete(MemberBean member) {
+		list.remove(list.indexOf(search(member)));
+		//list.remove(search(member));
 	}
-
-	@Override
-	public String readCount() {
-		return String.valueOf(count);
-	}
-
-	@Override
-	public String updateMember(MemberBean memberBean) {
-		String msg = "ERROR_비밀번호불일치";
-		String pass = memberBean.getPassword().split("/")[0];
-		String newPass = memberBean.getPassword().split("/")[1];
-		memberBean.setPassword(pass);
-		memberBean = findById(memberBean);
-		if (memberBean.getUid() == null) {
-			msg = "ERROR_계정정보없음";
-		} else if (!newPass.equals(pass)) {
-			msg = "변경완료";
-			memberBean.setPassword(newPass);
-		}
-		return msg;
-	}
-
-	@Override
-	public String withDrawalMember(MemberBean memberBean) {
-		String msg = "ERROR_비밀번호불일치";
-		String pass = memberBean.getPassword().split("/")[0];
-		String confirmPass = memberBean.getPassword().split("/")[1];
-		memberBean.setPassword(pass);
-		memberBean = findById(memberBean);
-		if (memberBean.getUid() == null) {
-			msg = "ERROR_계정정보없음";
-			return msg;
-		} else {
-			if (pass.equals(confirmPass)) {
-				for (int i = 0; i < count; i++) {
-					if (memberBean.getUid().equals(list[i].getUid())
-							&& memberBean.getPassword().equals(list[i].getPassword())) {
-						list[i] = list[--count];
-						msg = "계정삭제완료";
-						break;
-					}
-				}
-			}
-		}
-		return msg;
-	}
-
+	
 }

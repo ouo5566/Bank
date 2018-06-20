@@ -1,6 +1,6 @@
 package domain;
 
-public class SteffBean extends MemberBean{
+public class StaffBean extends MemberBean{
 	private String accessNum;
 	
 	public String getAccessNum() {

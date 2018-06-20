@@ -1,20 +1,18 @@
 package service;
+import java.util.List;
 import domain.*;
 
 public interface AccountService {
-	public void createAccount(AccountBean accountBean);
-	public void createMinusAccount(AccountBean accountBean,String limit);
-	public void addList(AccountBean accountBean);
-	public AccountBean[] list();
-	public String createAccountNum(String random);
+	public void createBasic(AccountBean account);
+	public void createMinus(AccountBean account);
+	public String createAccountNo(String random);
 	public String createRandom(int start, int end);
 	public String createDate();
-	public String showResult(AccountBean[] beanArr);
-	public AccountBean findById(AccountBean accountBean);
-	public int countSameWord(String word);
-	public AccountBean[] findByName(String name);
-	public int countMinusList();
-	public AccountBean[] findMinusList();
-	public String changePassWord(AccountBean accountBean);
-	public String deleteAccount(AccountBean accountBean);
+	public List<AccountBean> list();
+	public List<AccountBean> searchWord(String param);
+	public AccountBean search(AccountBean account);
+	public int selectCount();
+	public void updateAccount(AccountBean account);
+	public void deleteAccount(AccountBean account);
+	public List<AccountBean> minusList();
 }

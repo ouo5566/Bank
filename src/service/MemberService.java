@@ -1,17 +1,13 @@
 package service;
-
-import domain.MemberBean;
+import java.util.List;
+import domain.*;
 
 public interface MemberService {
-	public void creatUser(MemberBean memberBean);
-	public void creatSteff(MemberBean memberBean);
-	public void addList(MemberBean memberBean);
-	public MemberBean[] list();
-	public String showResult(MemberBean[] memberBean);
-	public MemberBean findById(MemberBean memberBean);
-	public int countSameWord(String word);
-	public MemberBean[] findByWord(String word);
-	public String readCount();
-	public String updateMember(MemberBean memberBean);
-	public String withDrawalMember(MemberBean memberBean);
+	public void createUser(UserBean user);
+	public void createStaff(StaffBean staff);
+	public List<MemberBean> list();
+	public List<MemberBean> search(String param);
+	public MemberBean search(MemberBean member);
+	public void update(MemberBean member);
+	public void delete(MemberBean member);
 }

@@ -10,6 +10,6 @@ public class MinusAccountBean extends AccountBean{
 		return limit;
 	}
 	public String toString() {
-		return String.format("[%s]\n %s\n 생성일 : %s\n 계좌번호 : %s\n 이름 : %s\n 대출한도 : -%s\n", BANK_NAME,accountType,createDate,accountNo,name,limit)+"\n";
+		return String.format("[%s]\n %s\n 생성일 : %s\n 계좌번호 : %s\n 이름 : %s\n 대출한도 : -%s\n", BANK_NAME,accountType,createDate,accountNo,name,limit);
 	}
 }

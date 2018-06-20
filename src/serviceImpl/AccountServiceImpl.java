@@ -1,169 +1,107 @@
 package serviceImpl;
 
+import java.util.List;
+import domain.AccountBean;
+import domain.MinusAccountBean;
+import service.AccountService;
+import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import domain.*;
-import service.AccountService;
 
 public class AccountServiceImpl implements AccountService {
-	private AccountBean[] list;
-	private int count;
+	List<AccountBean> list;
 
 	public AccountServiceImpl() {
-		list = new AccountBean[10];
-		count = 0;
+		list = new ArrayList<>();
 	}
 
 	@Override
-	public void createAccount(AccountBean basic) {
-		basic.setAccountType(AccountBean.ACCOUNT_TYPE);
-		basic.setAccountNo(createAccountNum(createRandom(0, 999_999_999)));
-		basic.setCreateDate(createDate());
-		addList(basic);
+	public void createBasic(AccountBean account) {
+		account.setAccountNo(createAccountNo(createRandom(0,999_999_999)));
+		account.setAccountType(AccountBean.ACCOUNT_TYPE);
+		account.setCreateDate(createDate());
+		list.add(account);
 	}
 
 	@Override
-	public void createMinusAccount(AccountBean minus, String limit) {
-		minus.setAccountType(MinusAccountBean.ACCOUNT_TYPE);
-		minus.setAccountNo(createAccountNum(createRandom(0, 999_999_999)));
-		minus.setCreateDate(createDate());
-		((MinusAccountBean) minus).setLimit(limit);
-		addList(minus);
+	public void createMinus(AccountBean account) {
+		account.setAccountNo(createAccountNo(createRandom(0,999_999_999)));
+		account.setAccountType(MinusAccountBean.ACCOUNT_TYPE);
+		account.setCreateDate(createDate());
+		list.add(account);
 	}
-
 	@Override
-	public void addList(AccountBean account) {
-		list[count++] = account;
+	public String createAccountNo(String random) {
+		return String.format("%s-%s-%s",random.substring(0,3),random.substring(3,6),random.substring(6,9));
 	}
-
-	@Override
-	public AccountBean[] list() {
-		return list;
-	}
-
-	@Override
-	public String createAccountNum(String random) {
-		return String.format("%s-%s-%s", random.substring(0, 3), random.substring(3, 6), random.substring(6, 9));
-	}
-
+	
 	@Override
 	public String createRandom(int start, int end) {
-		return String.format("%09d", (int) (Math.random() * (end + 1)) + start);
+		return String.format("%09d",((int)(Math.random() * end) + start));
 	}
-
+	
 	@Override
 	public String createDate() {
 		return new SimpleDateFormat("yyyy년 MM월 dd일").format(new Date());
 	}
-
+	
 	@Override
-	public String showResult(AccountBean[] beanArr) {
-		String result = "";
-		int count = (this.count < beanArr.length) ? this.count : beanArr.length;
-		for (int i = 0; i < count; i++) {
-			result += beanArr[i];
-		}
-		return result;
+	public List<AccountBean> list() {
+		return list;
 	}
 
 	@Override
-	public AccountBean findById(AccountBean accountBean) {
-		AccountBean searchedAccount = new AccountBean();
-		// 배열 list 를 looping 하면서 ID 와 PASS 가 일치한 값을 찾아서 그 객체를 리턴한다.
-		// 일치하는 값이 없는 상황은 나중에 처리.
-		for (int i = 0; i < count; i++) {
-			if (accountBean.getUid().equals(list[i].getUid())
-					&& accountBean.getPassWord().equals(list[i].getPassWord())) {
-				searchedAccount = list[i];
+	public List<AccountBean> searchWord(String param) {
+		List<AccountBean> arr = new ArrayList<>();
+		for (int i = 0; i < list.size(); i++) {
+			if (param.equals(list.get(i).getName())) {
+				arr.add(list.get(i));
+			}
+		}
+		return arr;
+	}
+
+	@Override
+	public AccountBean search(AccountBean account) {
+		AccountBean temp = new AccountBean();
+		for (int i = 0; i < list.size(); i++) {
+			if (account.getUid().equals(list.get(i).getUid()) && account.getPassWord().equals(list.get(i).getPassWord())) {
+				temp = list.get(i);
 				break;
 			}
 		}
-		return searchedAccount;
+		return temp;
 	}
 
 	@Override
-	public int countSameWord(String word) {
-		int samecount = 0;
-		for (int i = 0; i < count; i++) {
-			if (word.equals(list[i].getName())) {
-				samecount++;
+	public int selectCount() {
+		return list.size();
+	}
+
+	@Override
+	public void updateAccount(AccountBean account) {
+		String pass = account.getPassWord().split("/")[0];
+		String newPass = account.getPassWord().split("/")[1];
+		account.setPassWord(pass);
+		list.get(list.indexOf(search(account))).setPassWord(newPass);
+	}
+
+	@Override
+	public void deleteAccount(AccountBean account) {
+		String pass = account.getPassWord().split("/")[0];
+		String confirmPass = account.getPassWord().split("/")[1];
+		account.setPassWord(pass);
+		if(pass.equals(confirmPass)) list.remove(list.indexOf(search(account)));
+	}
+
+	@Override
+	public List<AccountBean> minusList() {
+		List<AccountBean> arr = new ArrayList<>();
+		for(int i = 0 ; i < list.size() ; i++ ) {
+			if(list.get(i) instanceof MinusAccountBean) {
+				arr.add(list.get(i));
 			}
 		}
-		return samecount;
+		return arr;
 	}
-
-	@Override
-	public AccountBean[] findByName(String name) {
-		AccountBean[] searchedAccount = new AccountBean[countSameWord(name)];
-		int j = 0;
-		for (int i = 0; i < count; i++) {
-			if (name.equals(list[i].getName())) {
-				searchedAccount[j++] = list[i];
-			}
-		}
-		return searchedAccount;
-	}
-	
-	@Override
-	public int countMinusList() {
-		int count = 0;
-		for(int i = 0 ; i < this.count ; i++) {
-//			if(MinusAccountBean.ACCOUNT_TYPE.equals(list[i].getAccountType())) {
-			if(list[i] instanceof MinusAccountBean) {
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	@Override
-	public AccountBean[] findMinusList() {
-		AccountBean[] minusList = new MinusAccountBean[countMinusList()];
-		int j = 0;
-		for(int i = 0 ; i < this.count ; i++) {
-//			if(MinusAccountBean.ACCOUNT_TYPE.equals(list[i].getAccountType())) {
-			if(list[i] instanceof MinusAccountBean) {
-				minusList[j++] = list[i];
-			}
-		}
-		return minusList;
-	}
-
-	@Override
-	public String changePassWord(AccountBean accountBean) {
-		// 성공 : 변경완료 , 실패 : 변경실패 (pass == newPass > 실패)
- 		String msg = "";
- 		String[] passUnit = String.valueOf(accountBean.getPassWord()).split("/");
- 		accountBean.setPassWord(passUnit[0]);
- 		accountBean = findById(accountBean);
- 		if(accountBean.getUid()==null) {
- 			msg = "계정없음";
- 		}else { 
- 			msg = (passUnit[1].equals(passUnit[0])) ? "변경실패" : "변경완료" ;
- 			accountBean.setPassWord(passUnit[1]);
- 		}
-		return msg;
-	}
-
-	@Override
-	public String deleteAccount(AccountBean accountBean) {
-		String msg = "ERROR_비밀번호불일치";
- 		String[] passUnit = String.valueOf(accountBean.getPassWord()).split("/");
- 		accountBean.setPassWord(passUnit[0]);
- 		accountBean = findById(accountBean);
- 		if(accountBean.getUid() == null) {
- 			msg = "ERROR_계좌없음";
- 			return msg;
- 		}else if(passUnit[1].equals(passUnit[0])) {
- 			for (int i = 0; i < count; i++) {
- 				if (accountBean.getUid().equals(list[i].getUid()) && passUnit[0].equals(list[i].getPassWord())) {
- 					list[i] = list[--count];
- 					msg = "계좌삭제완료";
- 					break;
- 				}
- 			}
- 		}
-		return msg;
-	}
-
 }
